@@ -1,13 +1,23 @@
+require('dotenv').config();
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const bcrypt = require("bcrypt");
 const {ObjectId} = require("mongodb");
+const GitHubStrategy = require('passport-github').Strategy;
 
 module.exports = function (app, myDatabase) {
     app.use((req, res, next) => {
         res.status(404)
             .type("text")
             .send("Not Found");
+    });
+
+    passport.use(new GitHubStrategy({
+        clientID: process.env.GITHUB_CLIENT_ID.clientID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        callbackURL: "http://localhost:3000/auth/github/callback"
+    }), function (accessToken, refreshToken, profile,cb) {
+        console.log(profile);
     });
 
     passport.use(new LocalStrategy((username, password, done) => {
