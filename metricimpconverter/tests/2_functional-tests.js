@@ -6,6 +6,11 @@ const server = require('../server');
 chai.use(chaiHttp);
 
 suite('Functional Tests', function() {
+    // put this in your functional test suite
+    after(function() {
+        chai.request(server).get('/api')
+    });
+    
     test('Convert a valid input L to gal', function (done) {
         chai
             .request(server)
