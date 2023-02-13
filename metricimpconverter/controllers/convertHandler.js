@@ -22,7 +22,7 @@ function ConvertHandler() {
       unitLongName: 'miles',
       returnUnit: 'km',
       convert: function (num) {
-        return num * 1.60934;
+        return parseFloat((num * 1.60934).toFixed(5));
       }
     },
     km: {
@@ -30,7 +30,7 @@ function ConvertHandler() {
       unitLongName: 'kilometers',
       returnUnit: 'mi',
       convert: function (num) {
-        return num / 1.60934;
+        return parseFloat((num / 1.60934).toFixed(5));
       }
     },
     lbs: {
@@ -38,7 +38,7 @@ function ConvertHandler() {
       unitLongName: 'pounds',
       returnUnit: 'kg',
       convert: function (num) {
-        return num * 0.453592;
+        return (num * 0.453592).toFixed(5);
       }
     },
     kg: {
@@ -65,18 +65,20 @@ function ConvertHandler() {
     if (fractionalRegex.test(result)) {
       const arr = result.split(fractionalRegex);
 
-      arr[0] = arr[0] % 1 > 0 ? parseFloat(arr[0]) : parseInt(arr[0]);
-      arr[1] = arr[1] % 1 > 0 ? parseFloat(arr[1]) : parseInt(arr[1]);
+      let left = arr[0] % 1 > 0 ? parseFloat(arr[0]) : parseInt(arr[0]);
+      let right = arr[1] % 1 > 0 ? parseFloat(arr[1]) : parseInt(arr[1]);
 
       if (result.match(/[/]/)) {
-        result = arr[0] / arr[1];
+        result = left / right;
       } else if (result.match(/[*]/)) {
-        result = arr[0] * arr[1];
+        result = left * right;
       } else if (result.match(/[-]/)) {
-        result = arr[0] - arr[1];
+        result = left - right;
       } else if (result.match(/[+]/)) {
-        result = arr[0] + arr[1];
+        result = left + right;
       }
+    } else if (result !== '') {
+      result = result % 1 > 0 ? parseFloat(result) : parseInt(result);
     }
 
     if (result === '') {
@@ -87,13 +89,15 @@ function ConvertHandler() {
   };
   
   this.getUnit = function(input) {
-    const regex = /^(gal|L|mi|km|lbs|kg)$/ig
-    let result = input.replace(regex, "");
-    result = listUnit[Object.keys(listUnit).find((key) =>
-        key.toLowerCase() === result.toLowerCase())];
-    if (!result) {
+    const regex = /(gal|L|mi|km|lbs|kg)$/ig
+    let unit = input.match(regex);
+    if (!unit) {
       return "invalid unit";
     }
+
+    let result = listUnit[Object.keys(listUnit).find((key) =>
+        key.toLowerCase() === unit[0].toLowerCase())];
+
     return result.unitName;
   };
   
