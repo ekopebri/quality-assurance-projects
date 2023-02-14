@@ -9,18 +9,19 @@ suite('Unit Tests', () => {
     test("Logic handles a valid puzzle string of 81 characters", () => {
         const puzzleString = "..9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..";
         let result = solver.validate(puzzleString);
-        assert.isTrue(result, "Check total character is 81");
+        assert.isNull(result, "Check total character is 81");
     });
 
     test("Logic handles a puzzle string with invalid characters (not 1-9 or .)", () => {
-        const puzzleString = "..9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..";
+        const puzzleString = "..S..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..";
         let result = solver.validate(puzzleString);
-        assert.isTrue(result);
+        assert.equal(result, "Invalid characters in puzzle");
     });
     test("Logic handles a puzzle string that is not 81 characters in length", () => {
-        const puzzleString = "9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..";
-        let result = solver.validate(puzzleString);
-        assert.isNotTrue(result);
+        const puzzleStringLessThan81 = "9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..";
+        const puzzleStringGreaterThan = "..9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6...";
+        assert.equal(solver.validate(puzzleStringLessThan81), "Expected puzzle to be 81 characters long");
+        assert.equal(solver.validate(puzzleStringGreaterThan), "Expected puzzle to be 81 characters long");
     });
     test("Logic handles a valid row placement", () => {
         const puzzleString = "..9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..";
@@ -49,7 +50,7 @@ suite('Unit Tests', () => {
     });
     test("Logic handles an invalid region (3x3 grid) placement", () => {
         const puzzleString = "..9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..";
-        let result = solver.checkRegionPlacement(puzzleString, 9, 9, 6);
+        let result = solver.checkRegionPlacement(puzzleString, 1, 1, 9);
         assert.isNotTrue(result);
     });
     test("Valid puzzle strings pass the solver", () => {
@@ -66,5 +67,5 @@ suite('Unit Tests', () => {
         const puzzleString = "1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.";
         const result = solver.solve(puzzleString);
         assert.equal("135762984946381257728459613694517832812936745357824196473298561581673429269145378", result.solution);
-    })
+    });
 });
