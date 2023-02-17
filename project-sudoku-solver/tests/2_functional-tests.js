@@ -6,6 +6,11 @@ const server = require('../server');
 chai.use(chaiHttp);
 
 suite('Functional Tests', () => {
+    // put this in your functional test suite
+    after(function() {
+        chai.request(server).get('/api')
+    });
+
     test('Solve a puzzle with valid puzzle string', function (done) {
         chai
             .request(server)

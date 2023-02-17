@@ -10,7 +10,7 @@ suite('Functional Tests', function() {
     after(function() {
         chai.request(server).get('/api')
     });
-    
+
     test('Convert a valid input L to gal', function (done) {
         chai
             .request(server)
