@@ -8,10 +8,7 @@ class HttpError {
             this.name = 'InternalServerError';
         } else if (typeof(error) === 'string' && options != null) {
             this.statusCode = options.statusCode;
-            this.data = {
-                error: error,
-                ...options.data
-            };
+            this.data = error;
         } else {
             if ( error.name === 'ValidationError' ) {
                 error.statusCode = 422;
