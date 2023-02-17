@@ -49,21 +49,19 @@ class IssueService extends Service {
 
             if (!id) {
                 return new HttpError('missing _id', {statusCode: 200});
-            }
-
-            let issue = await Issue.findById(id);
-
-            if (!issue) {
-                return new HttpError('could not update', {statusCode: 200, data: {_id: id}});
-            }
-
-            if (Object.keys(data).length < 1) {
+            } else if (Object.keys(data).length < 1) {
                 return new HttpError("no update field(s) sent", {
                     statusCode: 200,
                     data: {
                         _id: id
                     }
                 });
+            }
+
+            let issue = await Issue.findById(id);
+
+            if (!issue) {
+                return new HttpError('could not update', {statusCode: 200, data: {_id: id}});
             }
 
             await Issue.updateOne({_id: id}, data);
@@ -91,13 +89,12 @@ class IssueService extends Service {
             }
 
             let res = await Issue.deleteOne({_id: id});
-
-            if (res) {
+            if (res.deletedCount > 0) {
                 let response = new IssueResponse({_id: id});
                 return response.deleteOne();
-            } else {
-                return new HttpError('Something wrong happened');
             }
+
+            throw new Error("could not delete");
         } catch (err) {
             return new HttpError('could not delete', {statusCode: 200, data: {_id: id}});
         }

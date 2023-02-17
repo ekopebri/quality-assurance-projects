@@ -51,7 +51,7 @@ suite('Functional Tests', function() {
                 })
                 .end((err, res) => {
                     expect(sandbox.calledOnce).to.be.true;
-                    expect(res.status).to.equal(200);
+                    assert.equal(res.status, 200);
                     expect(res.type).to.equal('application/json');
                     expect(res.body.assigned_to).to.equal('Eko');
                     expect(res.body.created_by).to.equal('Doni');
@@ -85,7 +85,7 @@ suite('Functional Tests', function() {
                 })
                 .end((err, res) => {
                     expect(sandbox.calledOnce).to.be.true;
-                    expect(res.status).to.equal(200);
+                    assert.equal(res.status, 200);
                     expect(res.type).to.equal('application/json');
                     expect(res.body.assigned_to).to.equal('');
                     expect(res.body.created_by).to.equal('Doni');
@@ -104,7 +104,7 @@ suite('Functional Tests', function() {
                 .post('/api/issues/apitest')
                 .send({})
                 .end((err, res) => {
-                    expect(res.status).to.equal(200);
+                    assert.equal(res.status, 200);
                     expect(res.type).to.equal("application/json");
                     expect(res.body.error).to.equal("required field(s) missing");
                     done();
@@ -119,7 +119,7 @@ suite('Functional Tests', function() {
                 .get('/api/issues/apitest')
                 .end((err, res) => {
                     expect(sandbox.calledOnce).to.be.true;
-                    expect(res.status).to.equal(200);
+                    assert.equal(res.status, 200);
                     expect(res.type).to.equal("application/json");
                     expect(res.body).to.be.an("array").with.lengthOf(2);
                     done();
@@ -135,7 +135,7 @@ suite('Functional Tests', function() {
                 .get('/api/issues/apitest?open=true')
                 .end((err, res) => {
                     expect(sandbox.calledOnce).to.be.true;
-                    expect(res).to.have.status(200);
+                    assert.equal(res.status, 200);
                     expect(res).to.be.json;
                     expect(res.body).to.be.an('array').that.is.not.empty;
                     expect(res.body).to.be.an("array").with.lengthOf(2);
@@ -158,7 +158,7 @@ suite('Functional Tests', function() {
                 .get('/api/issues/apitest?open=true&assigned_to=Eko')
                 .end((err, res) => {
                     expect(sandbox.calledOnce).to.be.true;
-                    expect(res).to.have.status(200);
+                    assert.equal(res.status, 200);
                     expect(res).to.be.json;
                     expect(res.body).to.be.an('array').that.is.not.empty;
                     expect(res.body).to.be.an("array").with.lengthOf(2);
@@ -184,12 +184,10 @@ suite('Functional Tests', function() {
                     issue_title: "Updated title"
                 })
                 .end((err, res) => {
-                    expect(res).to.have.status(200);
+                    assert.equal(res.status, 200);
                     expect(res).to.be.json;
-                    assert.deepEqual(res.body, {
-                        result: 'successfully updated',
-                        _id: issue._id
-                    });
+                    expect(res.body.result).to.equal('successfully updated');
+                    expect(res.body._id).to.equal(issue._id);
                     done();
                 });
         });
@@ -213,12 +211,10 @@ suite('Functional Tests', function() {
                     created_by: "Ronaldo"
                 })
                 .end((err, res) => {
-                    expect(res).to.have.status(200);
+                    assert.equal(res.status, 200);
                     expect(res).to.be.json;
-                    assert.deepEqual(res.body, {
-                        result: 'successfully updated',
-                        _id: issue._id
-                    });
+                    expect(res.body.result).to.equal('successfully updated');
+                    expect(res.body._id).to.equal(issue._id);
                     done();
                 });
         });
@@ -233,7 +229,7 @@ suite('Functional Tests', function() {
                     created_by: "Ronaldo"
                 })
                 .end((err, res) => {
-                    expect(res).to.have.status(200);
+                    assert.equal(res.status, 200);
                     expect(res).to.be.json;
                     expect(res.body.error).to.equal('missing _id');
                     done();
@@ -253,29 +249,28 @@ suite('Functional Tests', function() {
                     _id: issue._id
                 })
                 .end((err, res) => {
-                    expect(res).to.have.status(200);
+                    assert.equal(res.status, 200);
                     expect(res).to.be.json;
-                    assert.deepEqual(res.body, {
-                        error: 'no update field(s) sent',
-                        _id: issue._id
-                    });
+                    expect(res.body.error).to.equal('no update field(s) sent');
+                    expect(res.body._id).to.equal(issue._id);
                     done();
                 });
         });
         test("Update an issue with an invalid _id", done => {
+            sandbox.stub(Issue, 'findById').withArgs("63ed9b943ae0eb24f467f47").resolves(null);
+
             chai
                 .request(server)
                 .put('/api/issues/apitest')
                 .send({
-                    _id: "63ed9b943ae0eb24f467f47XX"
+                    _id: '63ed9b943ae0eb24f467f47',
+                    issue_text: "Update Text"
                 })
                 .end((err, res) => {
-                    expect(res).to.have.status(200);
-                    expect(res).to.be.json;
-                    assert.deepEqual(res.body, {
-                        error: 'could not update',
-                        _id: '63ed9b943ae0eb24f467f47XX'
-                    });
+                    assert.equal(res.status, 200);
+                    assert.equal(res.type, 'application/json');
+                    assert.equal(res.body.error, 'could not update');
+                    assert.equal(res.body._id, '63ed9b943ae0eb24f467f47');
                     done();
                 });
         });
